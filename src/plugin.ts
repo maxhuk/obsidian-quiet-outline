@@ -151,6 +151,29 @@ export class QuietOutline extends Plugin {
 			}
 		});
 
+		this.addCommand({
+			id: "quiet-outline-copy-level-2-to-do-as-text",
+			name: "Copy level 2 headings with 'To Do' as plain text",
+			callback: async () => {
+				let copyText:string[] = [];
+				let underTodo = false;
+		
+				store.headers.forEach((h) => {
+					if (h.level === 1) {
+						underTodo = h.heading.includes("To Do");
+					} else if (h.level === 2 && underTodo) {
+						copyText.push("## " + h.heading);
+					}
+				});
+		
+				if (copyText.length > 0) {
+					await navigator.clipboard.writeText(copyText.join("\n"));
+					new Notice("Level 2 'To Do' headings copied");
+				} else {
+					new Notice("No level 2 'To Do' headings found");
+				}
+			}
+		});
 	}
 
 	onunload() {
